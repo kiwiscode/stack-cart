@@ -1,0 +1,11 @@
+{
+  "root": [
+    "./src/app.ts",
+    "./src/server.ts",
+    "./src/routes/auth.routes.ts",
+    "./src/config/index.ts",
+    "./src/utils/prismaconfig.ts"
+  ],
+  "errors": true,
+  "version": "5.7.3"
+}

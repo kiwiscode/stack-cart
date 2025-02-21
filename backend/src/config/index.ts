@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import express, { Application } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -6,7 +9,6 @@ import cors from "cors";
 
 const configMiddleware = (app: Application): void => {
   app.set("trust proxy", 1);
-
   app.use(morgan("dev"));
   app.use(helmet());
 

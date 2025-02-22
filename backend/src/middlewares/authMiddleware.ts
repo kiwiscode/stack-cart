@@ -6,8 +6,8 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(" ")[1];
+  const authHeader: string | undefined = req.headers.authorization;
+  const token: string | undefined = authHeader?.split(" ")[1];
 
   if (!token) {
     console.log("Unauthorized");
@@ -15,20 +15,33 @@ export const authMiddleware = (
     return;
   }
 
-  jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded: any) => {
-    if (err) {
-      console.log("error:", err);
-      if (err.name === "TokenExpiredError") {
-        console.error("Token has expired");
-        res.status(401).json({ errorMessage: "Token has expired" });
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET as string,
+    (
+      err: null | jwt.VerifyErrors,
+      decoded: string | jwt.JwtPayload | undefined
+    ) => {
+      if (err) {
+        console.log("error:", err);
+        if (err.name === "TokenExpiredError") {
+          console.error("Token has expired");
+          res.status(401).json({ errorMessage: "Token has expired" });
+          return;
+        }
+        console.log("Invalid token", err);
+        res.status(403).json({ errorMessage: "Invalid token" });
         return;
       }
-      console.log("Invalid token", err);
-      res.status(403).json({ errorMessage: "Invalid token" });
-      return;
-    }
 
-    req.body.userId = decoded.userId;
-    next();
-  });
+      if (typeof decoded !== "string" && decoded && decoded.userId) {
+        req.body.userId = decoded.userId;
+      } else {
+        res.status(403).json({ errorMessage: "Invalid token" });
+        return;
+      }
+
+      next();
+    }
+  );
 };

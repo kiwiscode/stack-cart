@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
 import request from "supertest";
-import { createApp } from "../../../app"; // Express uygulamanın ana dosyasını içe aktar
+import { createApp } from "../../../app";
 import prisma from "../../../utils/PrismaConfig";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
+import ms from "ms";
 
 const app = createApp();
 
@@ -158,7 +158,7 @@ describe("Auth Controller", () => {
     });
   });
 
-  describe("POST api/auth/login", () => {
+  describe("POST /api/auth/login", () => {
     it("should return 400 if the email is invalid", async () => {
       const res = await request(app).post("/api/auth/login").send({
         email: "invalidEmail",
@@ -246,5 +246,5 @@ describe("Auth Controller", () => {
     });
   });
 
-  describe("POST api/auth/logout", () => {});
+  describe("POST /api/auth/logout", () => {});
 });

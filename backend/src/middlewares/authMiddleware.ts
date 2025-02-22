@@ -11,7 +11,7 @@ export const authMiddleware = (
 
   if (!token) {
     console.log("Unauthorized");
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ errorMessage: "Unauthorized" });
     return;
   }
 
@@ -20,11 +20,11 @@ export const authMiddleware = (
       console.log("error:", err);
       if (err.name === "TokenExpiredError") {
         console.error("Token has expired");
-        res.status(401).json({ message: "Token has expired" });
+        res.status(401).json({ errorMessage: "Token has expired" });
         return;
       }
       console.log("Invalid token", err);
-      res.status(403).json({ message: "Invalid token" });
+      res.status(403).json({ errorMessage: "Invalid token" });
       return;
     }
 

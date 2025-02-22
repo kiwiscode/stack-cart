@@ -29,14 +29,15 @@ export async function register(req: Request, res: Response) {
     if (username === "" || email === "" || password === "") {
       res.status(403).json({
         errorMessage:
-          "All fields are mandatory. Please provide your full name, email and password.",
+          "All fields are mandatory. Please provide a username, email, and password.",
       });
       return;
     }
 
     if (username.length < 4) {
       res.status(400).json({
-        error: "Username is required and must be at least 4 characters long",
+        errorMessage:
+          "Username is required and must be at least 4 characters long.",
       });
       return;
     }
@@ -44,7 +45,7 @@ export async function register(req: Request, res: Response) {
     if (!email.match(emailRegex)) {
       res.status(400).json({
         success: false,
-        message: "Please enter a valid email.",
+        errorMessage: "Please enter a valid email.",
       });
       return;
     }
@@ -68,16 +69,19 @@ export async function register(req: Request, res: Response) {
     if (existingUsername) {
       res.status(400).json({
         success: false,
-        message: "Username is already taken. Please choose a different one.",
+        errorMessage:
+          "Username is already taken. Please choose a different one.",
       });
       return;
     }
+
     if (existingEmail) {
       res.status(400).json({
         success: false,
-        message:
+        errorMessage:
           "An account with this email already exists. Please use a different email.",
       });
+      return;
     }
 
     const hashedPassword: string = await bcrypt.hash(password, 10);
@@ -90,9 +94,17 @@ export async function register(req: Request, res: Response) {
       },
     });
 
-    res.status(201).json(user);
+    res.status(201).json({
+      createdUser: user,
+      message: "User created successfully.",
+    });
+    return;
   } catch (error) {
-    res.status(500).json({ error: "User creation failed" });
+    res.status(500).json({
+      errorMessage: "User creation failed. (Internal server error)",
+      error,
+    });
+    return;
   }
 }
 
@@ -103,7 +115,7 @@ export async function login(req: Request, res: Response) {
     if (!email.match(emailRegex)) {
       res.status(400).json({
         success: false,
-        message: "Please enter a valid email.",
+        errorMessage: "Please enter a valid email.",
       });
       return;
     }
@@ -150,8 +162,13 @@ export async function login(req: Request, res: Response) {
       success: true,
       token,
     });
+    return;
   } catch (error) {
-    res.status(500).json({ error: "User login failed" });
+    res.status(500).json({
+      errorMessage: "User login failed. (Internal server error)",
+      error,
+    });
+    return;
   }
 }
 
@@ -186,6 +203,9 @@ export async function logout(req: Request, res: Response) {
       message: "User logged out successfully.",
     });
   } catch (error) {
-    res.status(500).json({ error: "User logout failed" });
+    res.status(500).json({
+      errorMessage: "User logout failed. (Internal server error)",
+      error,
+    });
   }
 }

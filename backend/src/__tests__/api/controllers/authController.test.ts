@@ -2,8 +2,6 @@ import request from "supertest";
 import { createApp } from "../../../app";
 import prisma from "../../../utils/PrismaConfig";
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
-import ms from "ms";
 
 const app = createApp();
 
@@ -26,8 +24,20 @@ describe("Auth Controller", () => {
   });
 
   afterAll(async () => {
-    // delete user information
-    await prisma.user.deleteMany({});
+    await prisma.user.deleteMany({
+      where: {
+        email: {
+          in: [
+            "testuser@gmail.com",
+            "validUser@gmail.com",
+            "user1@gmail.com",
+            "newuser@gmail.com",
+            "existentuser@gmail.com",
+            "nonexistentuser@gmail.com",
+          ],
+        },
+      },
+    });
     await prisma.$disconnect();
   });
 
@@ -94,7 +104,7 @@ describe("Auth Controller", () => {
 
       const res = await request(app).post("/api/auth/register").send({
         username: "takenUsername", // already exist username
-        email: "user2@gmail.com",
+        email: "user1@gmail.com",
         password: "AnotherPass123.",
       });
 

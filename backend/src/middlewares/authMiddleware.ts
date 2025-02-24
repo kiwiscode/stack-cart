@@ -16,7 +16,7 @@ export const authMiddleware = (
   }
 
   jwt.verify(
-    token,
+    token as string,
     process.env.JWT_SECRET as string,
     (
       err: null | jwt.VerifyErrors,
